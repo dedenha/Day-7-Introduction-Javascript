@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        #currentTime {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        #alarmStatus {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Set Your Alarm</h1>
+    <div id="currentTime">Current Time: --:--</div>
+    
+    <label for="alarmTime">Alarm Time (24-hour format HH:MM):</label>
+    <input type="time" id="alarmTime">
+    <br><br>
+    
+    <button onclick="setAlarm()">Set Alarm</button>
+    <button onclick="clearAlarm()">Clear Alarm</button>
+    
+    <div id="alarmStatus">Alarm is not set.</div>
+
+    <script>
+        class Alarm {
+            constructor() {
+                this.alarmTime = null;
+                this.alarmActive = false;
+            }
+
+            // Set the alarm time
+            setAlarm(time) {
+                this.alarmTime = time;
+                this.alarmActive = true;
+                this.updateAlarmStatus(`Alarm set for ${time}`);
+            }
+
+            // Clear the alarm
+            clearAlarm() {
+                this.alarmTime = null;
+                this.alarmActive = false;
+                this.updateAlarmStatus('Alarm is not set.');
+            }
+
+            // Check if current time matches the alarm time
+            checkAndTrigger(currentTime) {
+                if (this.alarmActive && currentTime === this.alarmTime) {
+                    alert('Beep! Beep! Beep! Alarm is ringing!');
+                    this.clearAlarm(); // Deactivate after ringing
+                }
+            }
+
+            // Update the alarm status in the UI
+            updateAlarmStatus(status) {
+                document.getElementById('alarmStatus').textContent = status;
+            }
+        }
+
+        // Instantiate the Alarm class
+        const myAlarm = new Alarm();
+
+        // Get current time and display it in the UI
+        function updateCurrentTime() {
+            const now = new Date();
+            const formattedTime = now.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            document.getElementById('currentTime').textContent = `Current Time: ${formattedTime}`;
+            return formattedTime;
+        }
+
+        // Set the alarm
+        function setAlarm() {
+            const alarmTime = document.getElementById('alarmTime').value;
+            if (alarmTime) {
+                myAlarm.setAlarm(alarmTime);
+            } else {
+                alert('Please select a valid time!');
+            }
+        }
+
+        // Clear the alarm
+        function clearAlarm() {
+            myAlarm.clearAlarm();
+        }
+
+        // Update the current time and check the alarm every second
+        setInterval(() => {
+            const currentTime = updateCurrentTime();
+            myAlarm.checkAndTrigger(currentTime);
+        }, 1000);
+
+    </script>
+    
+</body>
+</html>
